@@ -3709,7 +3709,7 @@ help_() { #? Shows the help overlay
 		"Kill selected process with SIGKILL - 9."
 		"Interrupt selected process with SIGINT - 2."
 		" "
-		"Copyright (C) Macca Computer - 2021"
+		"Copyright (C) Macca Computer - 2023"
 	)
 
 	if [[ -n $pause_screen ]]; then from_menu=1; fi
