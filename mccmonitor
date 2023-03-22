@@ -13,7 +13,7 @@ case "$(uname -s)" in
 	*)       system="Other"
 esac
 if [[ ! $system =~ Linux|MacOS|BSD ]]; then
-	echo "This version of bashtop does not support $system platform."
+	echo "This version of MCCMONITOR does not support $system platform."
 	exit 1
 fi
 
@@ -90,7 +90,7 @@ fi
 read tty_height tty_width < <(${stty} size)
 
 #? Start default variables------------------------------------------------------------------------------>
-#? These values are used to create "$HOME/.config/bashtop/bashtop.cfg"
+#? These values are used to create "$HOME/.config/mccmonitor/mccmonitor.cfg"
 #? Any changes made here will be ignored if config file exists
 aaa_config() { : ; } #! Do not remove this line!
 
@@ -367,11 +367,11 @@ init_() { #? Collect needed information and set options before startig main loop
 	print -m $(( (tty_height/2-3)+stx++ )) 0 -bg "#00" -fg "#cc" -c -b "Checking network devices..."
 	get_net_device
 
-	#* Check if newer version of bashtop is available from https://github.com/aristocratos/bashtop
+	#* Check if newer version of mccmonitor is available from https://github.com/mcc-macca/mccmonitor
 	if [[ -n $curled && $update_check == "true" ]]; then
 		print -bg "#00" -fg "#30ff50" -r 1 -t "√"
 		print -m $(( (tty_height/2-3)+stx++ )) 0 -bg "#00" -fg "#cc" -c -b "Checking for updates..."
-		if ! get_value -v git_version -ss "$(curl -m 4 --raw -r 0-5000 https://raw.githubusercontent.com/aristocratos/bashtop/master/bashtop 2>/dev/null)" -k "version=" -r "[^0-9.]"; then unset git_version; fi
+		if ! get_value -v git_version -ss "$(curl -m 4 --raw -r 0-5000 https://raw.githubusercontent.com/mcc-macca/mccmonitor/master/mccmonitor 2>/dev/null)" -k "version=" -r "[^0-9.]"; then unset git_version; fi
 	fi
 
 	#* Add update notification to banner if new version is available
@@ -381,7 +381,7 @@ init_() { #? Collect needed information and set options before startig main loop
 		print -v banner_out_up -rs -fg "#80cc80" -r 15 "[${git_version} available!]" -r $((9-${#git_version}))
 		if [[ -n $notifier ]]; then
 			notify-send -u normal\
-			"Bashtop Update!" "New version of Bashtop available\!\nCurrent version: ${version}\n\New version: ${git_version}\nDownload at github.com/aristocratos/bashtop"\
+			"MccMonitor Update!" "New version of MccMonitor available\!\nCurrent version: ${version}\n\New version: ${git_version}\nDownload at github.com/mcc-macca/mccmonitor"\
 			-i face-glasses -t 10000
 		fi
 	else
@@ -596,7 +596,7 @@ sleep_() { #? Restore terminal options, stop and send to background if caught SI
 resume_() { #? Set terminal options and resume if caught SIGCONT ('fg' from terminal)
 	sleepy=0
 	echo -en "${alt_screen}${hide_cursor}${clear_screen}"
-	echo -en "\033]0;${TERMINAL_TITLE} BashTOP\a"
+	echo -en "\033]0;${TERMINAL_TITLE} MccMonitor\a"
 	${stty} -echo
 
 	if [[ -n $pause_screen ]]; then
@@ -667,7 +667,7 @@ draw_banner() { #? Draw banner, usage: draw_banner <line> [output variable]
 create_config() { #? Creates a new config file with default values from above
 	local c_line c_read this_file
 	this_file="$(${realpath} "$0")"
-	echo "#? Config file for bashtop v. ${version}" > "$config_file"
+	echo "#? Config file for MccMonitor v. ${version}" > "$config_file"
 	while IFS= read -r c_line; do
 		if [[ $c_line =~ aaz_config() ]]; then break
 		elif [[ $c_read == "1" ]]; then echo "$c_line" >> "$config_file"
@@ -3792,11 +3792,11 @@ options_() { #? Shows the options overlay
 	#* Check theme folder for theme files
 	get_themes
 
-	desc_color_theme=(	"Set bashtop color theme."
+	desc_color_theme=(	"Set MccMonitor color theme."
 						" "
 						"Choose between theme files located in"
-						"\"\$HOME/.config/bashtop/themes\" &"
-						"\"\$HOME/.config/bashtop/user_themes"
+						"\"\$HOME/.config/mccmonitor/themes\" &"
+						"\"\$HOME/.config/mccmonitor/user_themes"
 						" "
 						"User themes are prefixed with \"*\"."
 						"\"Default\" for builtin default."
@@ -3868,7 +3868,7 @@ options_() { #? Shows the options overlay
 							" "
 							"Empty string to disable.")
 	desc_error_logging=("Enable error logging to"
-						"\"\$HOME/.config/bashtop/error.log\""
+						"\"\$HOME/.config/mccmonitor/error.log\""
 						" "
 						"Program will be automatically restarted if"
 						"changing this option."
@@ -3903,7 +3903,7 @@ options_() { #? Shows the options overlay
 	desc_update_check=( "Check for updates."
 						" "
 						"Enable check for new version from"
-						"github.com/aristocratos/bashtop at start."
+						"github.com/mcc-macca/mccmonitor at start."
 						" "
 						"True or False.")
 	desc_hires_graphs=("Enable high resolution graphs."
@@ -3999,12 +3999,12 @@ options_() { #? Shows the options overlay
 			local -a theme_index
 			local git_theme new_themes=0 down_themes=0 new_theme
 			unset 'theme_index[@]' 'desc_color_theme[-1]' 'desc_color_theme[-1]' 'desc_color_theme[-1]' options_out
-			theme_index=($(curl -m 3 --raw https://raw.githubusercontent.com/aristocratos/bashtop/master/themes/index.txt 2>/dev/null))
+			theme_index=($(curl -m 3 --raw https://raw.githubusercontent.com/mcc-macca/mccmonitor/master/themes/index.txt 2>/dev/null))
 			if [[ ${theme_index[*]} =~ .theme ]]; then
 				for git_theme in ${theme_index[@]}; do
 					unset new_theme
 					if [[ ! -e "${config_dir}/themes/${git_theme}" ]]; then new_theme=1; fi
-					if curl -m 3 --raw "https://raw.githubusercontent.com/aristocratos/bashtop/master/themes/${git_theme}" >"${config_dir}/themes/${git_theme}" 2>/dev/null; then
+					if curl -m 3 --raw "https://raw.githubusercontent.com/mcc-macca/mccmonitor/master/themes/${git_theme}" >"${config_dir}/themes/${git_theme}" 2>/dev/null; then
 						((++down_themes))
 						if [[ -n $new_theme ]]; then
 							((++new_themes))
@@ -4697,17 +4697,17 @@ main_loop() { #? main loop...
 #? Pre main loop
 
 #* Read config file or create if non existant
-config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bashtop"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/mccmonitor"
 if [[ -d "${config_dir}" && -w "${config_dir}" ]] || mkdir -p "${config_dir}"; then
 	if [[ ! -d "${config_dir}/themes" ]]; then mkdir -p "${config_dir}/themes"; fi
 	if [[ ! -d "${config_dir}/user_themes" ]]; then mkdir -p "${config_dir}/user_themes"; fi
-	config_file="${config_dir}/bashtop.cfg"
+	config_file="${config_dir}/mccmonitor.cfg"
 	# shellcheck source=/dev/null
 	if [[ -e "$config_file" ]]; then
 		source "$config_file"
 
 		#* If current config is from an older version recreate config file and save user changes
-		if [[ $(get_value -sf "${config_file}" -k "bashtop v." -mk 1) != "${version}" ]]; then
+		if [[ $(get_value -sf "${config_file}" -k "mccmonitor v." -mk 1) != "${version}" ]]; then
 			create_config
 			save_config "${save_array[@]}"
 		fi
@@ -4807,7 +4807,7 @@ if [[ $use_psutil == true ]]; then
 			exit 1
 		fi
 	else
-		pywrapper="${pytmpdir}/bashtop.psutil"
+		pywrapper="${pytmpdir}/mccmonitor.psutil"
 
 cat << 'EOF' > "${pywrapper}"
 import os, sys, subprocess, re, time, psutil
@@ -5236,7 +5236,7 @@ if [[ $error_logging == true ]]; then
 		${rm} -f "${config_dir}/error.log"
 		${mv} -f "${config_dir}/tmp" "${config_dir}/error.log"
 	fi
-	( echo " " ; echo "New instance of bashtop version: ${version} Pid: $$" ) >> "${config_dir}/error.log"
+	( echo " " ; echo "New instance of mccmonitor version: ${version} Pid: $$" ) >> "${config_dir}/error.log"
 	exec 2>>"${config_dir}/error.log"
 	if [[ $1 == "--debug" ]]; then
 		exec 19>"${config_dir}/tracing.log"
